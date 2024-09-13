@@ -1,6 +1,12 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { Photo } from './photo.entity';
 
+export enum Status {
+    NO_PAYMENT = 'NO_PAYMENT',
+    PENDING_OTP = 'PENDING_OTP',
+    PAYMENT_SENT = 'PAYMENT_SENT',
+}
+
 @Entity()
 export class Feedback {
     @PrimaryGeneratedColumn()
@@ -15,8 +21,12 @@ export class Feedback {
     @Column('text')
     comment: string;
 
-    @Column()
-    replenishment: number; // 0 if no replenishment, 1 if yes
+    @Column({
+        type: 'enum',
+        enum: Status,
+        default: Status.NO_PAYMENT
+    })
+    status: Status;
 
     @Column()
     sku_name: string;

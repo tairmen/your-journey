@@ -1,15 +1,22 @@
-import { Controller, Get, Post, Param, Body, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Delete, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
 import { FeedbackService } from './feedback.service';
 import { Feedback } from './feedback.entity';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
-import { ConfirmPhoneDto } from './dto/confirm-phone.dto'
+import { ConfirmPhoneDto } from './dto/confirm.dto';
 
 @Controller('')
 export class FeedbackController {
   constructor(private readonly feedbackService: FeedbackService) {}
 
   @Post('feedback')
-  getAndCheckFeedback(@Body() feedbackData: CreateFeedbackDto): Promise<Feedback> {
+  @UseInterceptors(FilesInterceptor('files', 10))
+  getAndCheckFeedback(
+    @Body() feedbackData: CreateFeedbackDto,
+    @UploadedFiles() files: Array<Express.Multer.File>
+  ): Promise<Feedback> {
+    console.log('Files', files);
     return this.feedbackService.checkAndSaveFeedback(feedbackData);
   }
 

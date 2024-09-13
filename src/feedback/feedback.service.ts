@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Photo } from './photo.entity';
 import { Feedback } from './feedback.entity';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
-import { ConfirmPhoneDto } from './dto/confirm-phone.dto'
+import { ConfirmPhoneDto } from './dto/confirm.dto';
 
 @Injectable()
 export class FeedbackService {
@@ -13,12 +13,18 @@ export class FeedbackService {
     private feedbackRepository: Repository<Feedback>,
   ) {}
 
-  findByUserId(userId: number): Promise<Feedback[]> {
-    return this.feedbackRepository.find({ where: { user_id: userId } });
+  findByUserPhone(userPhone: string): Promise<Feedback[]> {
+    return this.feedbackRepository.find({ where: { phone: userPhone } });
   }
 
-  checkAndSaveFeedback(feedback: CreateFeedbackDto): Promise<Feedback> {
-    return this.feedbackRepository.save(feedback);
+  async checkAndSaveFeedback(feedback: CreateFeedbackDto): Promise<Feedback> {
+    let records = await this.findByUserPhone(feedback.phone);
+    if (records.length > 0) {
+      
+    } else {
+
+    }
+    return this.feedbackRepository.create(feedback);
   }
 
   confirmPhone(confirm: ConfirmPhoneDto): void {

@@ -7,8 +7,8 @@ import { FeedbackController } from './feedback.controller';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Feedback]),
-    TypeOrmModule.forFeature([Photo])
+    TypeOrmModule.forFeature([Photo]),
+    TypeOrmModule.forFeature([Feedback])
   ],
   providers: [FeedbackService],
   controllers: [FeedbackController]
