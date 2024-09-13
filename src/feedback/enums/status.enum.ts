@@ -1,0 +1,5 @@
+export enum Status {
+    NO_PAYMENT = 'NO_PAYMENT',
+    PENDING_OTP = 'PENDING_OTP',
+    PAYMENT_SENT = 'PAYMENT_SENT',
+}

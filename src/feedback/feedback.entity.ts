@@ -1,11 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { Photo } from './photo.entity';
-
-export enum Status {
-    NO_PAYMENT = 'NO_PAYMENT',
-    PENDING_OTP = 'PENDING_OTP',
-    PAYMENT_SENT = 'PAYMENT_SENT',
-}
+import { Status } from './enums/status.enum';
 
 @Entity()
 export class Feedback {
@@ -30,6 +25,9 @@ export class Feedback {
 
     @Column()
     sku_name: string;
+
+    @Column()
+    code: string;
 
     @Column()
     link: string;

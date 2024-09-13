@@ -5,6 +5,8 @@ import { Photo } from './photo.entity';
 import { Feedback } from './feedback.entity';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
 import { ConfirmPhoneDto } from './dto/confirm.dto';
+import { Status } from './enums/status.enum';
+
 
 @Injectable()
 export class FeedbackService {
@@ -18,13 +20,15 @@ export class FeedbackService {
   }
 
   async checkAndSaveFeedback(feedback: CreateFeedbackDto): Promise<Feedback> {
+    let createdFeedback = this.feedbackRepository.create(feedback);
     let records = await this.findByUserPhone(feedback.phone);
     if (records.length > 0) {
-      
+      createdFeedback.status = Status.NO_PAYMENT;
     } else {
-
+      createdFeedback.status = Status.PENDING_OTP;
     }
-    return this.feedbackRepository.create(feedback);
+    
+    return this.feedbackRepository.save(createdFeedback);
   }
 
   confirmPhone(confirm: ConfirmPhoneDto): void {
