@@ -16,8 +16,7 @@ export class SmsService {
     this.apiKey = this.configService.get<string>('SMS_API_KEY');
   }
 
-  // Метод для запроса данных из внешнего API
-  async smsSend(code: string): Promise<any> {
+  async smsSend(phone: string, code: string): Promise<any> {
     try {
       const data = {
         "messages": [
@@ -25,7 +24,7 @@ export class SmsService {
             "sender": "Testing PM OTP",
             "destinations": [
               {
-                "to": "380934061828"
+                "to": phone
               }
             ],
             "content": {

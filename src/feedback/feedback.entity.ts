@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { Photo } from './photo.entity';
 import { Status } from './enums/status.enum';
+import { IsNotEmpty, IsNumberString, Length } from 'class-validator';
 
 @Entity()
 export class Feedback {
@@ -11,6 +12,9 @@ export class Feedback {
     user_id: number;
 
     @Column()
+    @IsNotEmpty()
+    @IsNumberString()
+    @Length(12, 12)
     phone: string;
 
     @Column('text')
@@ -28,7 +32,7 @@ export class Feedback {
     })
     sku_name: string;
 
-    @Column()
+    @Column({ select: false })
     code: string;
 
     @Column()

@@ -21,7 +21,7 @@ export class FeedbackController {
   }
 
   @Post('confirm')
-  confirmPhone(@Body() codeData: ConfirmPhoneDto): void {
+  confirmPhone(@Body() codeData: ConfirmPhoneDto): Promise<Feedback> {
     return this.feedbackService.confirmPhone(codeData);
   }
 }

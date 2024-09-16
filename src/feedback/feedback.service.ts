@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Photo } from './photo.entity';
@@ -8,6 +8,7 @@ import { ConfirmPhoneDto } from './dto/confirm.dto';
 import { Status } from './enums/status.enum';
 import { firstValueFrom } from 'rxjs';
 import { SmsService } from './sms/sms.service'
+import { PaymentService  } from './payment/payment.service';
 
 
 @Injectable()
@@ -15,7 +16,8 @@ export class FeedbackService {
   constructor(
     @InjectRepository(Feedback)
     private feedbackRepository: Repository<Feedback>,
-    private readonly smsService: SmsService
+    private readonly smsService: SmsService,
+    private readonly paymentService: PaymentService
   ) { }
 
   generateNumber(digits: number) {
@@ -25,27 +27,27 @@ export class FeedbackService {
       .random() * (maxm - minm + 1)) + minm;
   }
 
-  findByUserPhone(userPhone: string): Promise<Feedback[]> {
-    return this.feedbackRepository.find({ where: { phone: userPhone } });
-  }
-
   async checkAndSaveFeedback(feedback: CreateFeedbackDto): Promise<Feedback> {
     let createdFeedback = this.feedbackRepository.create(feedback);
-    let records = await this.findByUserPhone(feedback.phone);
+    let records = await this.feedbackRepository.find({ where: { phone: feedback.phone } });;
     if (records.length > 0) {
       createdFeedback.status = Status.NO_PAYMENT;
     } else {
       createdFeedback.status = Status.PENDING_OTP;
       createdFeedback.user_id = this.generateNumber(8);
       const code = this.generateNumber(6).toString();
-      this.smsService.smsSend(code);
+      this.smsService.smsSend(createdFeedback.phone, code);
       createdFeedback.code = code
     }
-
     return this.feedbackRepository.save(createdFeedback);
   }
 
-  confirmPhone(confirm: ConfirmPhoneDto): void {
-    return;
+  async confirmPhone(confirm: ConfirmPhoneDto): Promise<Feedback> {
+    let lastPhoneRecord = await this.feedbackRepository.findOne({ where: { phone: confirm.phone, code: confirm.code } })
+    if (!lastPhoneRecord) {
+      throw new NotFoundException(`Code ${confirm.code} invalid`);
+    }
+    await this.paymentService.sendRefill(lastPhoneRecord.phone);
+    return lastPhoneRecord;
   }
 }
