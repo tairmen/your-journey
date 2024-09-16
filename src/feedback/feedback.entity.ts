@@ -23,7 +23,9 @@ export class Feedback {
     })
     status: Status;
 
-    @Column()
+    @Column({
+        nullable: true
+    })
     sku_name: string;
 
     @Column()
@@ -38,7 +40,9 @@ export class Feedback {
     @Column()
     flavor: number;
 
-    @Column()
+    @Column({
+        nullable: true
+    })
     filter: number;
 
     @Column('text')
